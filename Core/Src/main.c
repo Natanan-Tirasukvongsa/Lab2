@@ -49,6 +49,9 @@ uint16_t ButtonMatrixState = 0;
 
 //Button TimeStamp
 uint32_t ButtonMatrixTimestamp = 0;
+
+
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -96,7 +99,27 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+  //state machine
+  enum _StateStudentNumber
+  {
+  	StateNumber_Start = 0,
+  	StateNumber_first_6,
+  	StateNumber_second_2,
+  	StateNumber_third_3,
+  	StateNumber_fourth_4,
+  	StateNumber_fifth_0,
+  	StateNumber_sixth_5,
+  	StateNumber_seventh_0,
+  	StateNumber_eighth_0,
+  	StateNumber_nineth_0,
+  	StateNumber_tenth_2,
+  	StateNumber_eleventh_0,
+  	StateNumber_OK,
+  	StateNumber_clear,
+  	StateNumber_wrong
+  };
 
+  uint8_t STATE_NUMBER = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -108,6 +131,198 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	  //function button
 	  ButtonMatrixUpdate();
+
+	  switch (STATE_NUMBER)
+	  {
+	  	  case StateNumber_Start:
+	  		switch (ButtonMatrixState)
+	  			{
+	  				case 0b1000000:
+	  					STATE_NUMBER = StateNumber_first_6;
+	  					break;
+
+	  				default :
+	  					STATE_NUMBER = StateNumber_wrong;
+	  					break;
+	  			}
+	  		  break;
+
+	  	  case StateNumber_first_6:
+	  		switch (ButtonMatrixState)
+	  			{
+	  				case 0b1000000000:
+	  					STATE_NUMBER = StateNumber_second_2;
+	  			  		break;
+
+	  				default :
+	  					STATE_NUMBER = StateNumber_wrong;
+	  			  		break;
+	  			}
+	  		  break;
+
+	  	  case StateNumber_second_2:
+	  		switch (ButtonMatrixState)
+				{
+					case 0b10000000000:
+						STATE_NUMBER = StateNumber_third_3;
+						break;
+
+					default :
+						STATE_NUMBER = StateNumber_wrong;
+						break;
+				}
+	  		  break;
+
+	  	  case StateNumber_third_3:
+	  		switch (ButtonMatrixState)
+	  			{
+	  				case 0b10000:
+	  					STATE_NUMBER = StateNumber_fourth_4;
+	  			  		break;
+
+	  				default :
+	  					STATE_NUMBER = StateNumber_wrong;
+	  			  		break;
+	  			}
+	  		  break;
+
+	  	  case StateNumber_fourth_4:
+	  		switch (ButtonMatrixState)
+	  			{
+	  				case 0b1000000000000:
+	  					STATE_NUMBER = StateNumber_fifth_0;
+	  			  		break;
+
+	  			  	default :
+	  			  		STATE_NUMBER = StateNumber_wrong;
+	  			  		break;
+	  			}
+	  		  break;
+
+	  	  case StateNumber_fifth_0:
+	  		switch (ButtonMatrixState)
+	  			 {
+	  				case 0b100000:
+	  					STATE_NUMBER = StateNumber_sixth_5;
+	  			  		break;
+
+	  			  	default :
+	  			  		STATE_NUMBER = StateNumber_wrong;
+	  			  		break;
+	  			  }
+	  		  break;
+
+	  	  case StateNumber_sixth_5:
+	  		switch (ButtonMatrixState)
+	  			  {
+	  				case 0b1000000000000:
+	  					STATE_NUMBER = StateNumber_seventh_0;
+	  			  		break;
+
+	  			  	default :
+	  			  		STATE_NUMBER = StateNumber_wrong;
+	  			  		break;
+	  			  }
+	  		  break;
+
+	  	  case StateNumber_seventh_0:
+	  		switch (ButtonMatrixState)
+	  			  {
+	  			  	case 0b1000000000000:
+	  			  		STATE_NUMBER = StateNumber_eighth_0;
+	  			  		break;
+
+	  			  	default :
+	  			  		STATE_NUMBER = StateNumber_wrong;
+	  			  		break;
+	  			  }
+	  		  break;
+
+	  	  case StateNumber_eighth_0:
+	  		switch (ButtonMatrixState)
+	  			  {
+	  			  	case 0b1000000000000:
+	  			  		STATE_NUMBER = StateNumber_nineth_0;
+	  			  		break;
+
+	  			  	default :
+	  			  		STATE_NUMBER = StateNumber_wrong;
+	  			  		break;
+	  			  }
+	  		  break;
+
+	  	  case StateNumber_nineth_0:
+	  		switch (ButtonMatrixState)
+	  			  {
+	  			  	case 0b1000000000:
+	  			  		STATE_NUMBER = StateNumber_tenth_2;
+	  			  		break;
+
+	  			  	default :
+	  			  		STATE_NUMBER = StateNumber_wrong;
+	  			  		break;
+	  			  }
+	  		  break;
+
+	  	  case StateNumber_tenth_2:
+	  		switch (ButtonMatrixState)
+	  			  {
+	  			  	case 0b1000000000000:
+	  			  		STATE_NUMBER = StateNumber_eleventh_0;
+	  			  		break;
+
+	  			  	default :
+	  			  		STATE_NUMBER = StateNumber_wrong;
+	  			  		break;
+	  			  }
+	  		  break;
+
+	  	  case StateNumber_eleventh_0:
+	  		switch (ButtonMatrixState)
+	  			  {
+	  			  	case 0b1000000000000000:
+	  			  		STATE_NUMBER = StateNumber_OK;
+	  			  		break;
+
+	  			  	default :
+	  			  		STATE_NUMBER = StateNumber_wrong;
+	  			  		break;
+	  			  }
+	  		  break;
+
+	  	  case StateNumber_OK:
+	  		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+	  		switch (ButtonMatrixState)
+	  			  	{
+	  					case 0b1000:
+	  						STATE_NUMBER = StateNumber_clear;
+	  			  			break;
+
+	  			  		default :
+	  			  			STATE_NUMBER = StateNumber_wrong;
+	  			  			break;
+	  			  	}
+	  		  break;
+
+	  	  case StateNumber_clear:
+	  		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+	  		  STATE_NUMBER = StateNumber_Start;
+	  		  break;
+
+	  	  case StateNumber_wrong:
+	  		switch (ButtonMatrixState)
+	  			  	{
+	  			  		case 0b1000:
+	  			  			STATE_NUMBER = StateNumber_clear;
+	  			  			break;
+
+	  			  		default :
+	  			  			STATE_NUMBER = StateNumber_wrong;
+	  			  			break;
+	  			  	}
+	  		  break;
+
+	  }
   }
   /* USER CODE END 3 */
 }
