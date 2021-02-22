@@ -843,13 +843,13 @@ void ButtonMatrixUpdate()
  80007a8:	b580      	push	{r7, lr}
  80007aa:	b082      	sub	sp, #8
  80007ac:	af00      	add	r7, sp, #0
-	if (HAL_GetTick() - ButtonMatrixTimestamp >= 150)
+	if (HAL_GetTick() - ButtonMatrixTimestamp >= 100)
  80007ae:	f000 fbb9 	bl	8000f24 <HAL_GetTick>
  80007b2:	4602      	mov	r2, r0
  80007b4:	4bb0      	ldr	r3, [pc, #704]	; (8000a78 <ButtonMatrixUpdate+0x2d0>)
  80007b6:	681b      	ldr	r3, [r3, #0]
  80007b8:	1ad3      	subs	r3, r2, r3
- 80007ba:	2b95      	cmp	r3, #149	; 0x95
+ 80007ba:	2b63      	cmp	r3, #99	; 0x63
  80007bc:	f240 8257 	bls.w	8000c6e <ButtonMatrixUpdate+0x4c6>
 	{
 		ButtonMatrixTimestamp = HAL_GetTick();

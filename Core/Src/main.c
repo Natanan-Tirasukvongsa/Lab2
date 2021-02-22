@@ -308,7 +308,7 @@ uint8_t ButtonMatrixRow = 0; //what R Now
 
 void ButtonMatrixUpdate()
 {
-	if (HAL_GetTick() - ButtonMatrixTimestamp >= 150)
+	if (HAL_GetTick() - ButtonMatrixTimestamp >= 100)
 	{
 		ButtonMatrixTimestamp = HAL_GetTick();
 		int i;
