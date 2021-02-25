@@ -46,10 +46,36 @@ UART_HandleTypeDef huart2;
 //private variable
 //save status of Button Matrix
 uint16_t ButtonMatrixState = 0;
+uint16_t ButtonState[2]={0};
 
 //Button TimeStamp
 uint32_t ButtonMatrixTimestamp = 0;
 
+//state machine
+  enum _StateStudentNumber
+  {
+  	StateNumber_Start = 0,
+  	StateNumber_first_6,
+  	StateNumber_second_2,
+  	StateNumber_third_3,
+  	StateNumber_fourth_4,
+  	StateNumber_fifth_0,
+  	StateNumber_sixth_5,
+  	StateNumber_seventh_0,
+  	StateNumber_eighth_0,
+  	StateNumber_nineth_0,
+  	StateNumber_tenth_2,
+  	StateNumber_eleventh_0,
+  	StateNumber_OK,
+  	//StateNumber_clear,
+  	StateNumber_wrong
+  };
+
+  uint8_t STATE_NUMBER = 0;
+
+  uint16_t LED1_HalfPeriod = 500; // 1Hz
+  uint32_t TimeStamp = 0;
+  uint8_t on = 0;
 
 
 /* USER CODE END PV */
@@ -111,6 +137,266 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	  //function button
 	  ButtonMatrixUpdate();
+	  ButtonState[0] = ButtonMatrixState;
+	  if (ButtonState[0]!= 0b0 && ButtonState[1]== 0b0)
+	  {
+		  switch (STATE_NUMBER)
+		  	  {
+		  	  	  case StateNumber_Start:
+		  	  		  switch (ButtonMatrixState)
+		  	  		  {
+		  	  		  	  case 0b1000000: //press 6
+		  	  		  		  on = 1;
+		  	  		  		  STATE_NUMBER = StateNumber_first_6;
+		  	  		  		  break;
+		  	  		  	  case 0b1000: //press clear
+		  	  		  		  on = 1;
+		  	  		  		  STATE_NUMBER = StateNumber_Start;
+		  	  		  		  break;
+		  	  		  	  case 0b1000000000000000: //press ok
+		  	  		  		  on = 1;
+		  	  		  		  STATE_NUMBER = StateNumber_Start;
+		  	  		  		  break;
+		  	  		  	  default : //press others
+		  	  		  		  on = 1;
+		  	  		  		  STATE_NUMBER = StateNumber_wrong;
+		  	  		  		  break;
+		  	  		  }
+		  	  		  break;
+
+		  	  	  case StateNumber_first_6:
+		  	  		  switch (ButtonMatrixState)
+		  	  		  {
+		  	  		  	  case 0b1000000000: //press 2
+		  	  		  		  on = 1;
+		  	  		  		  STATE_NUMBER = StateNumber_second_2;
+		  	  		  		  break;
+		  	  		  	  case 0b1000: //press clear
+		  	  		  		  on = 1;
+		  	  		  		  STATE_NUMBER = StateNumber_Start;
+		  	  		  		  break;
+		  	  		  	  default : //press others
+		  	  		  		  on = 1;
+		  	  		  		  STATE_NUMBER = StateNumber_wrong;
+		  	  		  		  break;
+		  	  		  }
+		  	  		  break;
+
+		  	  	case StateNumber_second_2:
+		  	  		switch (ButtonMatrixState)
+		  	  		{
+		  	  			case 0b10000000000: //press 3
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_third_3;
+		  	  				break;
+		  	  			case 0b1000: //press clear
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_Start;
+		  	  				break;
+		  	  			default : //press others
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_wrong;
+		  	  				break;
+		  	  		}
+		  	  		break;
+
+		  	  	case StateNumber_third_3:
+		  	  		switch (ButtonMatrixState)
+		  	  		{
+		  	  			case 0b10000: //press 4
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_fourth_4;
+		  	  				break;
+		  	  			case 0b1000: //press clear
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_Start;
+		  	  				break;
+		  	  			default : //press others
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_wrong;
+		  	  				break;
+		  	  		}
+		  	  		break;
+
+		  	  	case StateNumber_fourth_4:
+		  	  		switch (ButtonMatrixState)
+		  	  		{
+		  	  			case 0b1000000000000: //press 0
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_fifth_0;
+		  	  				break;
+		  	  			case 0b1000: //press clear
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_Start;
+		  	  				break;
+		  	  			default : //press others
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_wrong;
+		  	  				break;
+		  	  		}
+		  	  		break;
+
+		  	  	case StateNumber_fifth_0:
+		  	  		switch (ButtonMatrixState)
+		  	  		{
+		  	  			case 0b100000: //press 5
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_sixth_5;
+		  	  				break;
+		  	  			case 0b1000: //press clear
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_Start;
+		  	  				break;
+		  	  			default : //press others
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_wrong;
+		  	  				break;
+		  	  		}
+		  	  		break;
+
+		  	  	case StateNumber_sixth_5:
+		  	  		switch (ButtonMatrixState)
+		  	  		{
+		  	  			case 0b1000000000000: //press 0
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_seventh_0;
+		  	  				break;
+		  	  			case 0b1000: //press clear
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_Start;
+		  	  				break;
+		  	  			default : //press others
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_wrong;
+		  	  				break;
+		  	  		}
+		  	  		break;
+
+		  	  	case StateNumber_seventh_0:
+		  	  		switch (ButtonMatrixState)
+		  	  		{
+		  	  			case 0b1000000000000: //press 0
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_eighth_0;
+		  	  				break;
+		  	  			case 0b1000: //press clear
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_Start;
+		  	  				break;
+		  	  			default : //press others
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_wrong;
+		  	  				break;
+		  	  		}
+		  	  		break;
+
+		  	  	case StateNumber_eighth_0:
+		  	  		switch (ButtonMatrixState)
+		  	  		{
+		  	  			case 0b1000000000000: //press 0
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_nineth_0;
+		  	  				break;
+		  	  			case 0b1000: //press clear
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_Start;
+		  	  				break;
+		  	  			default : //press other
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_wrong;
+		  	  				break;
+		  	  		}
+		  	  		break;
+
+		  	  	case StateNumber_nineth_0:
+		  	  		switch (ButtonMatrixState)
+		  	  		{
+		  	  			case 0b1000000000: //press 2
+		  	  				on =1;
+		  	  				STATE_NUMBER = StateNumber_tenth_2;
+		  	  				break;
+		  	  			case 0b1000: //press clear
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_Start;
+		  	  				break;
+		  	  			default : //press others
+		  	  				on =1;
+		  	  				STATE_NUMBER = StateNumber_wrong;
+		  	  				break;
+		  	  		}
+		  	  		break;
+
+		  	  	case StateNumber_tenth_2:
+		  	  		switch (ButtonMatrixState)
+		  	  		{
+		  	  			case 0b1000000000000: //press 0
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_eleventh_0;
+		  	  				break;
+		  	  			case 0b1000: //press clear
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_Start;
+		  	  				break;
+		  	  			default : //press others
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_wrong;
+		  	  				break;
+		  	  		}
+		  	  		break;
+
+		  	  	case StateNumber_eleventh_0:
+		  	  		switch (ButtonMatrixState)
+		  	  		{
+		  	  			case 0b1000000000000000: //press ok
+		  	  				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+		  	  				STATE_NUMBER = StateNumber_OK;
+		  	  				break;
+		  	  			case 0b1000: //press clear
+		  	  				on = 1;
+		  	  				STATE_NUMBER = StateNumber_Start;
+		  	  				break;
+		  	  			default : //press others
+		  	  				on =1;
+		  	  				STATE_NUMBER = StateNumber_wrong;
+		  	  				break;
+		  	  		}
+		  	  		break;
+
+		  	  	case StateNumber_OK:
+		  	  		switch (ButtonMatrixState)
+		  	  		{
+		  	  			case 0b1000: //press clear
+		  	  				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+		  	  				STATE_NUMBER = StateNumber_Start;
+		  	  				break;
+		  	  			default : //press others
+		  	  				STATE_NUMBER = StateNumber_wrong;
+		  	  				break;
+		  	  		}
+		  	  		break;
+
+		  	  							  	  //case StateNumber_clear:
+		  	  							  		  //HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+		  	  							  		  //STATE_NUMBER = StateNumber_Start;
+		  	  							  		  //break;
+
+		  	  	case StateNumber_wrong:
+		  	  		switch (ButtonMatrixState)
+		  	  		{
+		  	  			case 0b1000: //press clear
+		  	  				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+		  	  				STATE_NUMBER = StateNumber_Start;
+		  	  				break;
+		  	  			default : //press others
+		  	  				STATE_NUMBER = StateNumber_wrong;
+		  	  				break;
+		  	  		}
+		  	  		break;
+
+		  	}
+	  }
+	  ButtonState[1] = ButtonState[0];
+
 
 
   }
@@ -280,31 +566,7 @@ uint16_t ButtonMatrixPin[8] =
 
 uint8_t ButtonMatrixRow = 0; //what R Now
 
-//state machine
-  enum _StateStudentNumber
-  {
-  	StateNumber_Start = 0,
-  	StateNumber_first_6,
-  	StateNumber_second_2,
-  	StateNumber_third_3,
-  	StateNumber_fourth_4,
-  	StateNumber_fifth_0,
-  	StateNumber_sixth_5,
-  	StateNumber_seventh_0,
-  	StateNumber_eighth_0,
-  	StateNumber_nineth_0,
-  	StateNumber_tenth_2,
-  	StateNumber_eleventh_0,
-  	StateNumber_OK,
-  	//StateNumber_clear,
-  	StateNumber_wrong
-  };
 
-  uint8_t STATE_NUMBER = 0;
-
-  uint16_t LED1_HalfPeriod = 500; // 1Hz
-  uint32_t TimeStamp = 0;
-  uint8_t on = 0;
 
 void ButtonMatrixUpdate()
 {
@@ -319,289 +581,7 @@ void ButtonMatrixUpdate()
 			if (PinState == GPIO_PIN_RESET) // Button Press
 			{
 				ButtonMatrixState |= (uint16_t)0x1 << (i + ButtonMatrixRow * 4); //0x1 = 1
-				switch (STATE_NUMBER)
-							  {
-							  	  case StateNumber_Start:
-							  		switch (ButtonMatrixState)
-							  			{
-							  				case 0b1000000: //press 6
-							  					on = 1;
-							  					STATE_NUMBER = StateNumber_first_6;
-							  					break;
 
-							  				case 0b1000: //press clear
-							  					on = 1;
-							  					STATE_NUMBER = StateNumber_Start;
-							  					break;
-
-							  				case 0b1000000000000000: //press ok
-							  					on = 1;
-							  					STATE_NUMBER = StateNumber_Start;
-							  					break;
-
-							  				default : //press others
-							  					on = 1;
-							  					STATE_NUMBER = StateNumber_wrong;
-							  					break;
-							  			}
-
-
-							  		  break;
-
-							  	  case StateNumber_first_6:
-							  		switch (ButtonMatrixState)
-							  			{
-							  				case 0b1000000000: //press 2
-							  					on = 1;
-							  					STATE_NUMBER = StateNumber_second_2;
-							  			  		break;
-
-							  				case 0b1000: //press clear
-							  					on = 1;
-							  					STATE_NUMBER = StateNumber_Start;
-							  					break;
-
-							  				default : //press others
-							  					on = 1;
-							  					STATE_NUMBER = StateNumber_wrong;
-							  			  		break;
-							  			}
-							  		  break;
-
-							  	  case StateNumber_second_2:
-							  		switch (ButtonMatrixState)
-										{
-											case 0b10000000000: //press 3
-												on = 1;
-												STATE_NUMBER = StateNumber_third_3;
-												break;
-
-											case 0b1000: //press clear
-												on = 1;
-												STATE_NUMBER = StateNumber_Start;
-												break;
-
-											default : //press others
-												on = 1;
-												STATE_NUMBER = StateNumber_wrong;
-												break;
-										}
-							  		  break;
-
-							  	  case StateNumber_third_3:
-							  		switch (ButtonMatrixState)
-							  			{
-							  				case 0b10000: //press 4
-							  					on = 1;
-							  					STATE_NUMBER = StateNumber_fourth_4;
-							  			  		break;
-
-							  				case 0b1000: //press clear
-							  					on = 1;
-							  					STATE_NUMBER = StateNumber_Start;
-							  					break;
-
-							  				default : //press others
-							  					on = 1;
-							  					STATE_NUMBER = StateNumber_wrong;
-							  			  		break;
-							  			}
-							  		  break;
-
-							  	  case StateNumber_fourth_4:
-							  		switch (ButtonMatrixState)
-							  			{
-							  				case 0b1000000000000: //press 0
-							  					on = 1;
-							  					STATE_NUMBER = StateNumber_fifth_0;
-							  			  		break;
-
-							  				case 0b1000: //press clear
-							  					on = 1;
-							  					STATE_NUMBER = StateNumber_Start;
-							  					break;
-
-							  			  	default : //press others
-							  			  		on = 1;
-							  			  		STATE_NUMBER = StateNumber_wrong;
-							  			  		break;
-							  			}
-							  		  break;
-
-							  	  case StateNumber_fifth_0:
-							  		switch (ButtonMatrixState)
-							  			 {
-							  				case 0b100000: //press 5
-							  					on = 1;
-							  					STATE_NUMBER = StateNumber_sixth_5;
-							  			  		break;
-
-							  				case 0b1000: //press clear
-							  					on = 1;
-							  					STATE_NUMBER = StateNumber_Start;
-							  					break;
-
-							  			  	default : //press others
-							  			  		on = 1;
-							  			  		STATE_NUMBER = StateNumber_wrong;
-							  			  		break;
-							  			  }
-							  		  break;
-
-							  	  case StateNumber_sixth_5:
-							  		switch (ButtonMatrixState)
-							  			  {
-							  				case 0b1000000000000: //press 0
-							  					on = 1;
-							  					STATE_NUMBER = StateNumber_seventh_0;
-							  			  		break;
-
-							  				case 0b1000: //press clear
-							  					on = 1;
-							  					STATE_NUMBER = StateNumber_Start;
-							  					break;
-
-							  			  	default : //press others
-							  			  		on = 1;
-							  			  		STATE_NUMBER = StateNumber_wrong;
-							  			  		break;
-							  			  }
-							  		  break;
-
-							  	  case StateNumber_seventh_0:
-							  		switch (ButtonMatrixState)
-							  			  {
-							  			  	case 0b1000000000000: //press 0
-							  			  		on = 1;
-							  			  		STATE_NUMBER = StateNumber_eighth_0;
-							  			  		break;
-
-							  			  	case 0b1000: //press clear
-							  			  		on = 1;
-							  			  		STATE_NUMBER = StateNumber_Start;
-							  			  		break;
-
-							  			  	default : //press others
-							  			  		on = 1;
-							  			  		STATE_NUMBER = StateNumber_wrong;
-							  			  		break;
-							  			  }
-							  		  break;
-
-							  	  case StateNumber_eighth_0:
-							  		switch (ButtonMatrixState)
-							  			  {
-							  			  	case 0b1000000000000: //press 0
-							  			  		on = 1;
-							  			  		STATE_NUMBER = StateNumber_nineth_0;
-							  			  		break;
-
-							  			  	case 0b1000: //press clear
-							  			  		on = 1;
-							  			  		STATE_NUMBER = StateNumber_Start;
-							  			  		break;
-
-							  			  	default : //press other
-							  			  		on = 1;
-							  			  		STATE_NUMBER = StateNumber_wrong;
-							  			  		break;
-							  			  }
-							  		  break;
-
-							  	  case StateNumber_nineth_0:
-							  		switch (ButtonMatrixState)
-							  			  {
-							  			  	case 0b1000000000: //press 2
-							  			  		on =1;
-							  			  		STATE_NUMBER = StateNumber_tenth_2;
-							  			  		break;
-
-							  			  	case 0b1000: //press clear
-							  			  		on = 1;
-							  			  		STATE_NUMBER = StateNumber_Start;
-							  			  		break;
-
-							  			  	default : //press others
-							  			  		on =1;
-							  			  		STATE_NUMBER = StateNumber_wrong;
-							  			  		break;
-							  			  }
-							  		  break;
-
-							  	  case StateNumber_tenth_2:
-							  		switch (ButtonMatrixState)
-							  			  {
-							  			  	case 0b1000000000000: //press 0
-							  			  		on = 1;
-							  			  		STATE_NUMBER = StateNumber_eleventh_0;
-							  			  		break;
-
-							  			  	case 0b1000: //press clear
-							  			  		on = 1;
-							  			  		STATE_NUMBER = StateNumber_Start;
-							  			  		break;
-
-							  			  	default : //press others
-							  			  		on = 1;
-							  			  		STATE_NUMBER = StateNumber_wrong;
-							  			  		break;
-							  			  }
-							  		  break;
-
-							  	  case StateNumber_eleventh_0:
-							  		switch (ButtonMatrixState)
-							  			  {
-							  			  	case 0b1000000000000000: //press ok
-							  			  		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
-							  			  		STATE_NUMBER = StateNumber_OK;
-							  			  		break;
-
-							  			  	case 0b1000: //press clear
-							  			  		on = 1;
-							  			  		STATE_NUMBER = StateNumber_Start;
-							  			  		break;
-
-							  			  	default : //press others
-							  			  		on =1;
-							  			  		STATE_NUMBER = StateNumber_wrong;
-							  			  		break;
-							  			  }
-							  		  break;
-
-							  	  case StateNumber_OK:
-							  		switch (ButtonMatrixState)
-							  			  	{
-							  					case 0b1000: //press clear
-							  						HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-							  						STATE_NUMBER = StateNumber_Start;
-							  			  			break;
-
-							  			  		default : //press others
-							  			  			STATE_NUMBER = StateNumber_wrong;
-							  			  			break;
-							  			  	}
-							  		  break;
-
-							  	  //case StateNumber_clear:
-							  		  //HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-							  		  //STATE_NUMBER = StateNumber_Start;
-							  		  //break;
-
-							  	  case StateNumber_wrong:
-							  		switch (ButtonMatrixState)
-							  			  	{
-							  			  		case 0b1000: //press clear
-							  			  			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-							  			  			STATE_NUMBER = StateNumber_Start;
-							  			  			break;
-
-							  			  		default : //press others
-							  			  			STATE_NUMBER = StateNumber_wrong;
-							  			  			break;
-							  			  	}
-							  		  break;
-
-							  }
 			}
 			else
 			{
